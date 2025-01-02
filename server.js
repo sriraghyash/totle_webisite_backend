@@ -7,20 +7,20 @@ const {sequelize} = require("./db/mysql_connect");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const languageRoutes = require("./routes/languageRoutes");
-const { insertLanguages } = require("./models/Language");
+// const { insertLanguages } = require("./models/userModels/Language");
 const catalogRoutes = require('./routes/catalog'); 
 const bodyParser = require('body-parser');
 
 
 
-sequelize
-  .sync() // Sync the database
-  .then(async () => {
-    await insertLanguages(); 
-  })
-  .catch((error) => {
-    console.error("Error syncing tables:", error);
-  });
+// sequelize
+//   .sync() // Sync the database
+//   .then(async () => {
+//     await insertLanguages(); 
+//   })
+//   .catch((error) => {
+//     console.error("Error syncing tables:", error);
+//   });
 
 
 // Initialize app

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Category, Education, Board, Grade, Subject, Topic } = require('../models');
+const { Category, Education, Board, Grade, Subject, Topic } = require('../models/catalogModels');
 
 router.get('/', async (req, res) => {
     try {

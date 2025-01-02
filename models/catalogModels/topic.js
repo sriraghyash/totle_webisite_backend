@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+// const{catalogSequelize} = require('../../db/mysql_connect')
 const Subject = require('./subject')
 module.exports = (catalogSequelize) => {
     return catalogSequelize.define('Topic', {

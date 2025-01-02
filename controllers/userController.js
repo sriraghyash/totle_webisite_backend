@@ -1,5 +1,5 @@
-const User = require("../models/User");
-const {Language} = require("../models/Language");
+const User = require("../models/userModels/User");
+const {Language} = require("../models/userModels/Language");
 const { hashPassword, comparePassword } = require("../utils/hashUtils");
 const { sendOtp, verifyOtp } = require("../utils/otpUtils");
 const { generateToken } = require("../utils/jwtUtils");

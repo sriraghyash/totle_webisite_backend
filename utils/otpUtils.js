@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const Otp = require("../models/Otp");
+const Otp = require("../models/userModels/Otp");
 
 const sendOtp = async (email) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();

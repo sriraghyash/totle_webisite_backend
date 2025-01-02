@@ -1,4 +1,8 @@
-const {catalogSequelize} = require('../db/mysql_connect');
+// const {catalogSequelize} = require('../../db/mysql_connect');
+let { catalogSequelize } = require('../../db/mysql_connect');
+// let {cs, sequelize} = require('../../db/mysql_connect')
+
+console.log("catalogSequelize in index file:", !!catalogSequelize);
 const { DataTypes } = require('sequelize');
 
 const Category = require('./category')(catalogSequelize, DataTypes);
