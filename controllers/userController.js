@@ -1,4 +1,6 @@
-const User = require("../models/userModels/User");
+const { models } = require("../db/mysql_connect");
+const { User } = models.user;
+
 const {Language} = require("../models/userModels/Language");
 const { hashPassword, comparePassword } = require("../utils/hashUtils");
 const { sendOtp, verifyOtp } = require("../utils/otpUtils");

@@ -1,4 +1,7 @@
-const { Language } = require("../models/userModels/Language");
+const { models } = require("../db/mysql_connect");
+const { Language } = models.user;
+
+console.log("Language Model:", Language);
 
 const getLanguages = async (req, res) => {
   try {

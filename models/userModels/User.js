@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false, // First name is required
       },
-      lastname: {
+      lastName: {
         type: DataTypes.STRING,
         allowNull: true, // Last name is optional
       },

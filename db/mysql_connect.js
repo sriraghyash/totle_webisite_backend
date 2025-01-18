@@ -24,6 +24,9 @@ console.log("Catalog Sequelize Initialized:", !!catalogSequelize);
 console.log("Main Sequelize Initialized:", !!sequelize);
 
 // Models for Catalog DB
+const Language = require('../models/userModels/Language')(sequelize, DataTypes);
+const Otp = require('../models/userModels/Otp')(sequelize, DataTypes);
+const User = require('../models/userModels/User')(sequelize, DataTypes);
 const Category = require("../models/catalogModels/category")(catalogSequelize, DataTypes);
 const Education = require("../models/catalogModels/education")(catalogSequelize, DataTypes);
 const Board = require("../models/catalogModels/board")(catalogSequelize, DataTypes);
@@ -88,6 +91,11 @@ module.exports = {
   sequelize,
   catalogSequelize,
   models: {
+    user:{
+      Language,
+      Otp,
+      User
+    },
     catalog: {
       Category,
       Education,
