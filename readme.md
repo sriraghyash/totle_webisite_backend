@@ -21,3 +21,47 @@
 6. https://totle-webisite-backend.onrender.com/users/signup/verify
 7. https://totle-webisite-backend.onrender.com/users/login
 8. https://totle-webisite-backend.onrender.com/users/:userId
+
+## Catalog list
+
+# Academics
+1. Concept Mastery  
+2. Knowledge Application  
+3. Critical Thinking  
+4. Retention  
+5. Communication Skills (Written/Verbal)  
+6. Curriculum Progress  
+7. Feedback Utilization  
+
+# Examprep
+1. Accuracy  
+2. Speed  
+3. Exam Strategy  
+4. Question Type Proficiency  
+5. Syllabus Mastery  
+6. Mock Performance  
+7. Stress Management 
+
+# Skills
+1. Practical Application
+2. Problem-Solving
+3. Technical Proficiency
+4. Adaptability
+5. Certification
+6. Collaboration
+7. Innovation
+Arts
+1. Creativity and Innovation
+2. Artistic Process
+3. Expression
+4. Portfolio Development
+5. Performance/Presentation
+6. Feedback Incorporation
+7. Consistency
+
+Universal Learning Aspects (Applicable across all categories)
+Growth Mindset
+Self-Reflection
+Time Management
+Resource Utilization
+Resilience
