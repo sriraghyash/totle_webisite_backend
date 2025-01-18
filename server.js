@@ -16,6 +16,7 @@ const googleCors = {
   origin: ["http://localhost:3000", "https://www.totle.co"],
   credentials: true,
 };
+app.set('trust proxy', 1);
 app.options('*', cors(googleCors));
 app.use(cors(googleCors));
 app.use(express.json());
