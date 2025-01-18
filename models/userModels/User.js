@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         unique: true, // Unique identifier for Google authentication
       },
-      firstname: {
+      firstName: {
         type: DataTypes.STRING,
         allowNull: false, // First name is required
       },

@@ -6,18 +6,18 @@ const { generateToken } = require("../utils/jwtUtils");
 
 const signupUser = async (req, res) => {
     const {
-        firstname,
+        firstName,
         email,
         // mobile,
         password,
         preferredLanguage,
-        lastname,
+        lastName,
         knownLanguages,
       } = req.body;
     
       console.log(email)
       try {
-        if (!firstname)
+        if (!firstName)
           return res
             .status(400)
             .json({ error: true, message: "First name is required" });
@@ -95,7 +95,7 @@ const signupUser = async (req, res) => {
 };
   
 const verifySignup = async (req, res) => {
-    const {email, otp, firstname, password, preferredLanguage, lastname, knownLanguages} = req.body;
+    const {email, otp, firstName, password, preferredLanguage, lastname, knownLanguages} = req.body;
     try {
       const result = await verifyOtp(email, otp);
       if (result.error) {
@@ -105,7 +105,7 @@ const verifySignup = async (req, res) => {
       const newUser = await User.create({
         email,
         password: hashedPassword,
-        firstname,
+        firstName,
         lastname,
         preferred_language_id: preferredLanguage,
         known_language_ids: knownLanguages,
@@ -169,7 +169,7 @@ const loginUser = async (req, res) => {
 
     const userData = {
       userid:user.id,
-      firstname: existingUser.firstname,
+      firstName: existingUser.firstName,
       lastname: existingUser.lastname,
       email: existingUser.email,
       preferredLanguage,
@@ -197,12 +197,12 @@ const getUserById = async (req, res) => {
   
 const updateUser = async (req, res) => {
 const { userId } = req.params;
-const { firstname, lastname, email, preferred_language_id, known_language_ids } = req.body;
+const { firstName, lastname, email, preferred_language_id, known_language_ids } = req.body;
 try {
     const user = await User.findByPk(userId);
     if (!user) return res.status(404).json({ error: true, message: "User not found" });
 
-    user.firstname = firstname || user.firstname;
+    user.firstName = firstName || user.firstName;
     user.lastname = lastname || user.lastname;
     user.email = email || user.email;
     user.preferred_language_id = preferred_language_id || user.preferred_language_id;
