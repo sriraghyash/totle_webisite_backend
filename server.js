@@ -16,7 +16,7 @@ const googleCors = {
   origin: ["http://localhost:3000", "https://www.totle.co"],
   credentials: true,
 };
-
+app.options('*', cors(googleCors));
 app.use(cors(googleCors));
 app.use(express.json());
 app.use(bodyParser.json());
@@ -41,7 +41,6 @@ app.use("/catalog", catalogRoutes);
 sequelize.sync().then(() => {
   console.log("Database connected and synced.");
 });
-app.options('*', cors(googleCors));
 // Start server
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
