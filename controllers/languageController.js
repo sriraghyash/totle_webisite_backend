@@ -1,5 +1,5 @@
-const { models } = require("../db/mysql_connect");
-const { Language } = models.user;
+const { models } = require("../models");
+const { Language } = models;
 
 console.log("Language Model:", Language);
 

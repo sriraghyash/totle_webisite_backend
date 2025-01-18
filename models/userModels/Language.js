@@ -1,5 +1,3 @@
-const { DataTypes } = require("sequelize");
-const {sequelize} = require("../../db/mysql_connect");
 
 module.exports = (sequelize, DataTypes) => {
   const Language = sequelize.define(

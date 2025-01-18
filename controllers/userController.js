@@ -1,5 +1,5 @@
-const { models } = require("../db/mysql_connect");
-const { User } = models.user;
+const { models } = require("../models");
+const { User } = models;
 
 const {Language} = require("../models/userModels/Language");
 const { hashPassword, comparePassword } = require("../utils/hashUtils");

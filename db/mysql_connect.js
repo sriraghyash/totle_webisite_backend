@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes } = require("sequelize");
+const { insertLanguages } = require("../models/userModels/Language");
 require("dotenv").config();
 
 // Database Names
@@ -24,38 +25,15 @@ console.log("Catalog Sequelize Initialized:", !!catalogSequelize);
 console.log("Main Sequelize Initialized:", !!sequelize);
 
 // Models for Catalog DB
+
 const Language = require('../models/userModels/Language')(sequelize, DataTypes);
-const Otp = require('../models/userModels/Otp')(sequelize, DataTypes);
-const User = require('../models/userModels/User')(sequelize, DataTypes);
-const Category = require("../models/catalogModels/category")(catalogSequelize, DataTypes);
-const Education = require("../models/catalogModels/education")(catalogSequelize, DataTypes);
-const Board = require("../models/catalogModels/board")(catalogSequelize, DataTypes);
-const Grade = require("../models/catalogModels/grade")(catalogSequelize, DataTypes);
-const Subject = require("../models/catalogModels/subject")(catalogSequelize, DataTypes);
-const Topic = require("../models/catalogModels/topic")(catalogSequelize, DataTypes);
-
-// Define relationships for Catalog DB
-Category.hasMany(Education, { foreignKey: "categoryId" });
-Education.belongsTo(Category, { foreignKey: "categoryId" });
-
-Education.hasMany(Board, { foreignKey: "educationId" });
-Board.belongsTo(Education, { foreignKey: "educationId" });
-
-Board.hasMany(Grade, { foreignKey: "boardId" });
-Grade.belongsTo(Board, { foreignKey: "boardId" });
-
-Grade.hasMany(Subject, { foreignKey: "gradeId" });
-Subject.belongsTo(Grade, { foreignKey: "gradeId" });
-
-Subject.hasMany(Topic, { foreignKey: "subjectId" });
-Topic.belongsTo(Subject, { foreignKey: "subjectId" });
-
 async function initializeDatabases() {
   try {
     // Authenticate and sync the main database
     await sequelize.authenticate();
     console.log("Connected to the main database successfully.");
     await sequelize.sync({ alter: true });
+    // await Language.insertLanguages();
     console.log("Main database models synchronized successfully.");
 
     // Authenticate and sync the catalog database
@@ -90,19 +68,4 @@ initializeDatabases();
 module.exports = {
   sequelize,
   catalogSequelize,
-  models: {
-    user:{
-      Language,
-      Otp,
-      User
-    },
-    catalog: {
-      Category,
-      Education,
-      Board,
-      Grade,
-      Subject,
-      Topic,
-    },
-  },
 };
