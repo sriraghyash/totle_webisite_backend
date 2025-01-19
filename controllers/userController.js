@@ -1,7 +1,7 @@
 const { models } = require("../models");
 const { User } = models;
 
-const {Language} = require("../models/userModels/Language");
+const {Language,Otp} = models;
 const { hashPassword, comparePassword } = require("../utils/hashUtils");
 const { sendOtp, verifyOtp } = require("../utils/otpUtils");
 const { generateToken } = require("../utils/jwtUtils");
@@ -96,6 +96,84 @@ const signupUser = async (req, res) => {
       }
 };
   
+const resetUser = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: true, message: "Email is required" });
+  }
+  try {
+    // Check if an OTP exists for the given email
+    const otpRecord = await Otp.findOne({ where: { email } });
+
+    if (otpRecord) {
+      // Check if the OTP has expired
+      if (new Date() < otpRecord.expiry) {
+        return res.status(200).json({
+          error: false,
+          message: "You can use the existing OTP sent to your email.",
+        });
+      }
+    }
+
+    // Send a new OTP if no valid OTP exists or if it's expired
+    const result = await sendOtp(email);
+
+    if (result.error) {
+      return res.status(500).json({ error: true, message: result.message });
+    }
+
+    return res.status(200).json({ error: false, message: "A new OTP has been sent to your email." });
+  } catch (error) {
+    console.error("Error during OTP reset: ", error);
+    return res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const otpVerification = async(req,res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({ error: true, message: "Email and OTP are required" });
+  }
+
+  const result = await verifyOtp(email, otp);
+  if (result.error) {
+    return res.status(400).json({ error: true, message: result.message });
+  } else {
+    return res.status(200).json({error: false, message: result.message });
+  }
+}
+
+// Reset Password Endpoint
+const resetPassword= async (req, res) => {
+  const { email, newPassword } = req.body;
+  console.log(email)
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ error: true, message: 'Email and new password are required' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ error: true, message: 'User not found' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Update the user's password in the database
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    return res.status(500).json({ error: true, message: 'Internal Server Error' });
+  }
+};
+
 const verifySignup = async (req, res) => {
     const {email, otp, firstName, password, preferredLanguage, lastname, knownLanguages} = req.body;
     try {
@@ -217,4 +295,4 @@ try {
 }
 };
   
-module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser };
+module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification };

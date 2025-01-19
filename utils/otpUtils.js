@@ -1,7 +1,15 @@
 const nodemailer = require("nodemailer");
-const Otp = require("../models/userModels/Otp");
+const { models } = require("../models");
+const { Otp } = models;
 
 const sendOtp = async (email) => {
+  console.log('email is', email)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || typeof email !== "string" || !emailRegex.test(email)) {
+    console.error("Invalid email provided:", email);
+    return { error: true, message: "Invalid email address" };
+  }
+
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -56,4 +64,4 @@ const sendOtpEmail = async (email, otp) => {
   await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendOtp, verifyOtp };
+module.exports = { sendOtp, verifyOtp, sendOtpEmail };
