@@ -276,23 +276,125 @@ const getUserById = async (req, res) => {
 };
   
 const updateUser = async (req, res) => {
-const { userId } = req.params;
-const { firstName, lastname, email, preferred_language_id, known_language_ids } = req.body;
-try {
-    const user = await User.findByPk(userId);
-    if (!user) return res.status(404).json({ error: true, message: "User not found" });
+  const { userId } = req.params;
+  const { firstName, lastname, email, preferred_language_id, known_language_ids } = req.body;
+  try {
+      const user = await User.findByPk(userId);
+      if (!user) return res.status(404).json({ error: true, message: "User not found" });
 
-    user.firstName = firstName || user.firstName;
-    user.lastname = lastname || user.lastname;
-    user.email = email || user.email;
-    user.preferred_language_id = preferred_language_id || user.preferred_language_id;
-    user.known_language_ids = known_language_ids || user.known_language_ids;
+      user.firstName = firstName || user.firstName;
+      user.lastname = lastname || user.lastname;
+      user.email = email || user.email;
+      user.preferred_language_id = preferred_language_id || user.preferred_language_id;
+      user.known_language_ids = known_language_ids || user.known_language_ids;
 
+      await user.save();
+      res.status(200).json({ message: "User updated successfully", user });
+  } catch (error) {
+      res.status(500).json({ error: true, message: "Internal server error" });
+  }
+};
+const upduser= async (req, res) => {
+  const { userId } = req.params;
+  const {
+    firstname,
+    lastname,
+    email,
+    mobile,
+    preferred_language_id,
+    known_language_ids,
+  } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "User not found",
+      });
+    }
+
+    // Update user profile fields if provided in the request body
+    if (firstname !== undefined) user.firstname = firstname;
+    if (lastname !== undefined) user.lastname = lastname;
+    if (email !== undefined) user.email = email;
+    if (mobile !== undefined) user.mobile = mobile;
+    if (preferred_language_id !== undefined) {
+      const preferredLanguage = await Language.findOne({
+        where: { language_id: preferred_language_id },
+      });
+
+      if (!preferredLanguage) {
+        return res.status(400).json({
+          error: true,
+          message: "Invalid preferred language ID",
+        });
+      }
+      user.preferred_language_id = preferred_language_id;
+    }
+
+    if (known_language_ids !== undefined) {
+      const knownLanguages = await Language.findAll({
+        where: { language_id: known_language_ids },
+      });
+
+      if (knownLanguages.length !== known_language_ids.length) {
+        return res.status(400).json({
+          error: true,
+          message: "One or more known language IDs are invalid",
+        });
+      }
+      user.known_language_ids = known_language_ids;
+    }
+    if (req.file) {
+      user.image = req.file.buffer;
+    }
+
+
+    // Save the updated user profile
     await user.save();
-    res.status(200).json({ message: "User updated successfully", user });
-} catch (error) {
-    res.status(500).json({ error: true, message: "Internal server error" });
-}
+
+    // Fetch updated preferred and known languages for response
+    const updatedPreferredLanguage = await Language.findOne({
+      where: { language_id: user.preferred_language_id },
+      attributes: ["language_name"],
+    });
+
+    const updatedKnownLanguages = await Language.findAll({
+      where: { language_id: user.known_language_ids },
+      attributes: ["language_name"],
+    });
+
+    const updatedKnownLanguageNames = updatedKnownLanguages.map(
+      (lang) => lang.language_name
+    );
+
+    // Prepare the response data
+    const responseData = {
+      id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      mobile: user.mobile,
+      preferredLanguage: updatedPreferredLanguage?.language_name || "Unknown",
+      knownLanguages: updatedKnownLanguageNames,
+      image: user.image ? user.image.toString("base64") : null,
+    };
+
+    // Send the response
+    return res.status(200).json({
+      message: "User profile updated successfully",
+      data: responseData,
+    });
+  } catch (error) {
+    console.error("Error updating user information: ", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
 };
   
-module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification };
+module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification, upduser };
