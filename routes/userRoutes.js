@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require('multer');
 const upload = multer();
 const { loginUser, signupUser, verifySignup, getUserById, updateUser, resetUser,resetPassword, otpVerification, upduser } = require("../controllers/userController");
 // const { sendOtp, verifyOtp } = require("../utils/otpUtils");

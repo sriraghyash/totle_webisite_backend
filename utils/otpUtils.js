@@ -16,12 +16,52 @@ const sassyMessages = [
   "Your OTP is hanging in there, valid for ${minutes}m ${seconds}s. Don’t give it the cold shoulder!"
 ];
 
+const otpSentMessages=[
+  "An OTP has been sent! It’s probably sitting in your inbox, sipping coffee, waiting for you to notice.",
+  "Boom! OTP sent. It’s now living rent-free in your inbox—check it out!",
+  "Congrats, your OTP is flying its way to your inbox.",
+  "All set! Your OTP is heading to your inbox. Give it a warm welcome when it arrives!",
+  "Your OTP has been delivered. Hope, it might not end up in your spam folder.",
+  "Your OTP has been delivered. Now, let’s see if you can find it before it expires!",
+  "We’ve sent your OTP. If it’s not in your inbox, it might be taking a quick vacation in your spam folder.",
+  "Good news: your OTP is sent. Bad news: it might get jealous if you ignore it for too long.",
+  "Your OTP is delivered. If you don’t see it, perhaps your spam folder is offering it a temporary home."
+]
+
+const failedOtpMessages = [
+  "Sending the OTP failed. Technology isn’t perfect, but we’re sure you’ll give it another chance.",
+  "Oops, the OTP didn’t make it out the door. Let’s blame the server for now—try resending it.",
+  "The OTP didn’t make it. Maybe it got stuck in a digital traffic jam. Hit resend to give it another shot.",
+  "Failed to send OTP. It happens to the best of systems. Give it another go—third time’s the charm, maybe?",
+  "Sending the OTP didn’t work this time. It’s like the server pressed snooze. Wake it up by trying again!",
+  "We tried sending the OTP, but it didn’t cooperate. Don’t give up—resend and show it who’s boss!",
+  "Your OTP didn’t make it. Let’s give it another chance to shine—hit resend and we’ll cheer it on."
+]
+
+const invalidEmailMessages  = [
+  "That doesn’t look right. Double-check your email—maybe your keyboard slipped.",
+  "Invalid email address. If that was a creative attempt, I’m impressed—but let’s stick to standard email formats.",
+  "Oops, we can’t send anything to that. Double-check your email address before we both get embarrassed.",
+  "Email address invalid. Let’s give it another shot—this time, with fewer typos.",
+  "Hmm, that doesn’t look like an email address. Maybe double-check before we blame autocorrect?",
+  "Invalid email address. Let’s pretend that was a practice run and go for the real thing this time.",
+  "Hmm, your email seems to be missing some essentials. Maybe an @ symbol or, you know, logic?",
+  "We’re unable to process this email address. Please confirm it’s correctly formatted and try again."
+]
+
+let radIndex= Math.floor(Math.random() * invalidEmailMessages.length);
+
 const sendOtp = async (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || typeof email !== "string" || !emailRegex.test(email)) {
     console.error("Invalid email provided:", email);
-    return { error: true, message: "Invalid email address" };
+    const invalidMailmsg = invalidEmailMessages[radIndex];
+    return { error: true, message: invalidMailmsg };
   }
+  const randomIndex = Math.floor(Math.random() * otpSentMessages.length);
+  const failedIndex = Math.floor(Math.random() * failedOtpMessages.length);
+  const sentMessage = otpSentMessages[randomIndex];
+  const failedSentMessage = failedOtpMessages[failedIndex]
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expiry = new Date(Date.now() + 5 * 60 * 1000);
@@ -51,10 +91,10 @@ const sendOtp = async (email) => {
     }
 
     await sendOtpEmail(email, otp);
-    return { message: "OTP sent successfully." };
+    return { message: sentMessage };
   } catch (error) {
     console.error("Error sending OTP:", error);
-    return { error: true, message: "Failed to send OTP." };
+    return { error: true, message: failedSentMessage };
   }
 };
 
@@ -72,11 +112,23 @@ const expiredMessages = [
   "That OTP has officially retired. Let’s get you a fresh one.",
   "Expired OTP alert! Time to hit that resend button like a champ."
 ];
+
+const otpSuccess=[
+  "Success! OTP verified. TOTLE appreciates those who persevere, and you nailed it!",
+  "OTP verified! Looks like TOTLE’s spirit of Endeavour worked its magic on you.",
+  "Verified! At TOTLE, we’re all about growth, and you’ve just leveled up with that OTP.",
+  "Well done! OTP verified. TOTLE inspires progress, and you’re clearly moving forward.",
+  "Well done! OTP verified. TOTLE thrives on Endeavour, and you’ve just proven it’s worth it.",
+  "OTP verified! TOTLE inspires action, and you’re clearly someone who gets things done.",
+  "OTP verified successfully! TOTLE knows effort matters, and this moment proves it’s always worth it.",
+  "Verified! At TOTLE, we celebrate wins—big or small. And this is definitely a win for you!"
+]
 const verifyOtp = async (email, otp) => {
+  const randomFailureMessage = failureMessages[Math.floor(Math.random() * failureMessages.length)];
+  const otpSuccessMessage = otpSuccess[Math.floor(Math.random() * otpSuccess.length)]
   try {
     const otpRecord = await Otp.findOne({ where: { email, otp, isVerified: false } });
     if (!otpRecord){
-      const randomFailureMessage = failureMessages[Math.floor(Math.random() * failureMessages.length)];
       return { error: true, message: randomFailureMessage };
     } 
 
@@ -87,10 +139,10 @@ const verifyOtp = async (email, otp) => {
 
     otpRecord.isVerified = true;
     await otpRecord.save();
-    return { message: "OTP verified successfully." };
+    return { message: otpSuccessMessage };
   } catch (error) {
     console.error("Error verifying OTP:", error);
-    return { error: true, message: "Failed to verify OTP." };
+    return { error: true, message: randomFailureMessage };
   }
 };
 
