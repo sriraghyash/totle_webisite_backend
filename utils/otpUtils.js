@@ -9,7 +9,7 @@ const sassyMessages = [
   "Take a deep breath! Your OTP is hanging out in your inbox, good for another ${minutes}m ${seconds}s. Give it some love!",
   "You’ve already got an OTP, and it’s still valid for ${minutes}m ${seconds}s. You’re not ghosting it, are you?",
   "Hey, your OTP is fine. It’s valid for ${minutes}m ${seconds}s. No need to break up with it just yet!",
-  "Relax, bestie! That OTP we sent is good for ${minutes}m ${seconds}s. Stop stressing my server and check your inbox.",
+  "Relax, Totler! That OTP we sent is good for ${minutes}m ${seconds}s. Stop stressing my server and check your inbox.",
   "Your OTP is alive and well, valid for ${minutes}m ${seconds}s. Don’t abandon it like yesterday’s leftovers!",
   "Whoa, hold up! Your OTP is valid for another ${minutes}m ${seconds}s. No need to hit resend like it owes you money.",
   "Bro, your OTP is still valid for ${minutes}m ${seconds}s. Check your inbox—it’s waiting for you like a Brother from another mother.",
@@ -99,7 +99,7 @@ const sendOtp = async (email) => {
 };
 
 const failureMessages = [
-  "Oops! That OTP isn’t it. Double-check and try again, bestie.",
+  "Oops! That OTP isn’t it. Double-check and try again, Totler.",
   "Wrong OTP? Don’t worry, even superheroes mistype sometimes.",
   "Not quite! Looks like your OTP needs a second look.",
   "Uh-oh! That OTP didn’t pass the vibe check. Try again!",

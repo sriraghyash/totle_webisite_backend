@@ -95,7 +95,20 @@ const signupUser = async (req, res) => {
         });
       }
 };
-  
+
+const sassyMessages = [
+  "Chill out! Your OTP is valid for another ${minutes}m ${seconds}s. It’s not going anywhere—just check your inbox!",
+  "Slow down, superstar. That OTP we sent is still valid for ${minutes}m ${seconds}s. No need to rush it!",
+  "Take a deep breath! Your OTP is hanging out in your inbox, good for another ${minutes}m ${seconds}s. Give it some love!",
+  "You’ve already got an OTP, and it’s still valid for ${minutes}m ${seconds}s. You’re not ghosting it, are you?",
+  "Hey, your OTP is fine. It’s valid for ${minutes}m ${seconds}s. No need to break up with it just yet!",
+  "Relax, Totler! That OTP we sent is good for ${minutes}m ${seconds}s. Stop stressing my server and check your inbox.",
+  "Your OTP is alive and well, valid for ${minutes}m ${seconds}s. Don’t abandon it like yesterday’s leftovers!",
+  "Whoa, hold up! Your OTP is valid for another ${minutes}m ${seconds}s. No need to hit resend like it owes you money.",
+  "Bro, your OTP is still valid for ${minutes}m ${seconds}s. Check your inbox—it’s waiting for you like a Brother from another mother.",
+  "Your OTP is hanging in there, valid for ${minutes}m ${seconds}s. Don’t give it the cold shoulder!"
+];
+
 const resetUser = async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -106,11 +119,12 @@ const resetUser = async (req, res) => {
     const otpRecord = await Otp.findOne({ where: { email } });
 
     if (otpRecord) {
+      const randomIndex = Math.floor(Math.random() * sassyMessages.length);
       // Check if the OTP has expired
       if (new Date() < otpRecord.expiry) {
         return res.status(200).json({
           error: false,
-          message: "You can use the existing OTP sent to your email.",
+          message: sassyMessages[randomIndex],
         });
       }
     }
