@@ -75,7 +75,8 @@ const sendOtp = async (email) => {
         const timeRemaining = Math.round((existingOtp.expiry - new Date()) / 1000); // Time remaining in seconds
         const minutes = Math.floor(timeRemaining / 60);
         const seconds = timeRemaining % 60;
-        
+        //made changes here
+
         const randomIndex = Math.floor(Math.random() * sassyMessages.length);
         const selectedMessage = sassyMessages[randomIndex].replace("${minutes}", minutes).replace("${seconds}", seconds);
 
