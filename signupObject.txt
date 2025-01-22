@@ -1,0 +1,34 @@
+sign up payload:
+-----------------
+
+{
+  "firstName": "John",
+  "email": "john.doe@example.com",
+  "password": "yourPassword123",
+  "preferredLanguage": "English",
+  "lastName": "Doe",
+  "knownLanguages": ["English", "Spanish"]
+}
+
+sign up success:
+----------------
+{
+  "message": "User signed up successfully",
+  "user": {
+    "id": "uniqueUserId",
+    "firstName": "John",
+    "email": "john.doe@example.com",
+    "preferredLanguage": "English",
+    "lastName": "Doe",
+    "knownLanguages": ["English", "Spanish"]
+  },
+  "token": "generatedJWTToken"
+}
+
+signup failure message:
+-----------------------
+
+{
+  "message": "User signup failed",
+  "error": "Detailed error message"
+}

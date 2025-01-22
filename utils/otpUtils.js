@@ -58,6 +58,7 @@ const sendOtp = async (email) => {
     const invalidMailmsg = invalidEmailMessages[radIndex];
     return { error: true, message: invalidMailmsg };
   }
+
   const randomIndex = Math.floor(Math.random() * otpSentMessages.length);
   const failedIndex = Math.floor(Math.random() * failedOtpMessages.length);
   const sentMessage = otpSentMessages[randomIndex];
@@ -71,12 +72,13 @@ const sendOtp = async (email) => {
 
     if (existingOtp) {
       if (new Date() < existingOtp.expiry) {
-        const randomIndex = Math.floor(Math.random() * sassyMessages.length);
-        const selectedMessage = sassyMessages[randomIndex].replace("${minutes}", minutes).replace("${seconds}", seconds);
-
         const timeRemaining = Math.round((existingOtp.expiry - new Date()) / 1000); // Time remaining in seconds
         const minutes = Math.floor(timeRemaining / 60);
         const seconds = timeRemaining % 60;
+        
+        const randomIndex = Math.floor(Math.random() * sassyMessages.length);
+        const selectedMessage = sassyMessages[randomIndex].replace("${minutes}", minutes).replace("${seconds}", seconds);
+
         return { 
           message: selectedMessage, 
           expiry: existingOtp.expiry 
