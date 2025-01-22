@@ -82,7 +82,8 @@ const sendOtp = async (email) => {
 
         return { 
           message: selectedMessage, 
-          expiry: existingOtp.expiry 
+          expiry: existingOtp.expiry,
+          status: "already-sent" 
         };
       } else {
         // Update OTP if the existing one has expired

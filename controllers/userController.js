@@ -117,14 +117,22 @@ const resetUser = async (req, res) => {
   try {
     // Check if an OTP exists for the given email
     const otpRecord = await Otp.findOne({ where: { email } });
+    console.log(otpRecord)
 
     if (otpRecord) {
       const randomIndex = Math.floor(Math.random() * sassyMessages.length);
       // Check if the OTP has expired
+      const timeRemaining = Math.round((otpRecord.expiry - new Date()) / 1000); // Time remaining in seconds
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      // Replace placeholders with actual minutes and seconds
+      const message = sassyMessages[randomIndex].replace("${minutes}", minutes)
+                      .replace("${seconds}", seconds);
       if (new Date() < otpRecord.expiry) {
+        console.log('true')
         return res.status(200).json({
           error: false,
-          message: sassyMessages[randomIndex],
+          message: message,
         });
       }
     }
@@ -136,7 +144,7 @@ const resetUser = async (req, res) => {
       return res.status(500).json({ error: true, message: result.message });
     }
 
-    return res.status(200).json({ error: false, message: "A new OTP has been sent to your email." });
+    return res.status(200).json({ error: false, message: result.message });
   } catch (error) {
     console.error("Error during OTP reset: ", error);
     return res.status(500).json({ error: true, message: "Internal Server Error" });
