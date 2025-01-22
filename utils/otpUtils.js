@@ -95,7 +95,7 @@ const sendOtp = async (email) => {
     }
 
     await sendOtpEmail(email, otp);
-    return { message: sentMessage };
+    return { error: false, message: sentMessage };
   } catch (error) {
     console.error("Error sending OTP:", error);
     return { error: true, message: failedSentMessage };
@@ -138,6 +138,9 @@ const verifyOtp = async (email, otp) => {
 
     if (new Date() > otpRecord.expiry) {
       const randomExpiredMessage = expiredMessages[Math.floor(Math.random() * expiredMessages.length)];
+      if (otpRecord.otp !== otp) {
+        return { error: true, message: randomFailureMessage };
+      }
       return { error: true, message: randomExpiredMessage };
     }
 
