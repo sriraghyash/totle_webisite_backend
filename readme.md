@@ -1,3 +1,7 @@
+## Required Installations
+npm i dotenv express bcrypt jsonwebtoken express-rate-limit sequelize passport-google-oauth20 crypto body-parser nodemailer multer mysql2 cors googleapis
+
+
 ## local apis
 
 1. http://localhost:5000/languages
