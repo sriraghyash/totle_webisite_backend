@@ -51,7 +51,7 @@ const invalidEmailMessages  = [
 
 let radIndex= Math.floor(Math.random() * invalidEmailMessages.length);
 
-const sendOtp = async (email) => {
+const sendOtp = async (email, mobile) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || typeof email !== "string" || !emailRegex.test(email)) {
     console.error("Invalid email provided:", email);

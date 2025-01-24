@@ -80,12 +80,12 @@ const signupUser = async (req, res) => {
             .json({ error: true, message: "Some known languages are invalid" });
         }
     
-        const result= await sendOtp(email);
-        if (result.error) {
-          return res.status(400).json({ error: true, message: result.message });
-        } else {
-          return res.status(200).json({ message: result.message });
-        }
+        // const result= await sendOtp(email);
+        // if (result.error) {
+        //   return res.status(400).json({ error: true, message: result.message });
+        // } else {
+        //   return res.status(200).json({ message: result.message });
+        // }
         
       } catch (error) {
         console.error("Error during signup: ", error);
@@ -94,6 +94,29 @@ const signupUser = async (req, res) => {
           message: "Internal Server Error",
         });
       }
+};
+
+const sendOtpEndpoint = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: true, message: "Email is required" });
+  }
+
+  try {
+    const result = await sendOtp(email);
+    if (result.error) {
+      return res.status(400).json({ error: true, message: result.message });
+    } else {
+      return res.status(200).json({ message: result.message });
+    }
+  } catch (error) {
+    console.error("Error sending OTP: ", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 const sassyMessages = [
@@ -419,4 +442,4 @@ const upduser= async (req, res) => {
   }
 };
   
-module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification, upduser };
+module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification, upduser, sendOtpEndpoint };
