@@ -6,23 +6,23 @@ const { hashPassword, comparePassword } = require("../utils/hashUtils");
 const { sendOtp, verifyOtp } = require("../utils/otpUtils");
 const { generateToken } = require("../utils/jwtUtils");
 
-const signupUser = async (req, res) => {
+const signupUserAndSendOtp = async (req, res) => {
     const {
-        firstName,
+        // firstName,
         email,
         // mobile,
         password,
-        preferredLanguage,
-        lastName,
-        knownLanguages,
+        // preferredLanguage,
+        // lastName,
+        // knownLanguages,
       } = req.body;
     
       console.log(email)
       try {
-        if (!firstName)
-          return res
-            .status(400)
-            .json({ error: true, message: "First name is required" });
+        // if (!firstName)
+        //   return res
+        //     .status(400)
+        //     .json({ error: true, message: "First name is required" });
         if (!email)
           return res
             .status(400)
@@ -31,15 +31,15 @@ const signupUser = async (req, res) => {
           return res
             .status(400)
             .json({ error: true, message: "Password is required" });
-        if (!preferredLanguage)
-          return res
-            .status(400)
-            .json({ error: true, message: "Preferred language is required" });
-        if (!Array.isArray(knownLanguages)) {
-          return res
-            .status(400)
-            .json({ error: true, message: "Known languages must be an array" });
-        }
+        // if (!preferredLanguage)
+        //   return res
+        //     .status(400)
+        //     .json({ error: true, message: "Preferred language is required" });
+        // if (!Array.isArray(knownLanguages)) {
+        //   return res
+        //     .status(400)
+        //     .json({ error: true, message: "Known languages must be an array" });
+        // }
     
         // Check if user already exists by email or username
         const existingUser = await User.findOne({ where: { email } });
@@ -55,37 +55,37 @@ const signupUser = async (req, res) => {
         // console.log("Preferred Language Provided:", preferredLanguage);
     
         // Fetch the preferredLanguage_id based on the provided language name
-        const language = await Language.findOne({
-          where: { language_id: preferredLanguage },
-        });
+        // const language = await Language.findOne({
+        //   where: { language_id: preferredLanguage },
+        // });
         // console.log(language)
     
-        if (!language) {
-          return res.status(400).json({
-            error: true,
-            message: "Preferred language not found",
-          });
-        }
+        // if (!language) {
+        //   return res.status(400).json({
+        //     error: true,
+        //     message: "Preferred language not found",
+        //   });
+        // }
     
         // const preferredLanguage_id = language.language_id;
     
-        const validLanguages = await Language.findAll({
-          where: { language_id: knownLanguages },
-          attributes: ["language_id"],
-        });
+        // const validLanguages = await Language.findAll({
+        //   where: { language_id: knownLanguages },
+        //   attributes: ["language_id"],
+        // });
     
-        if (validLanguages.length !== knownLanguages.length) {
-          return res
-            .status(400)
-            .json({ error: true, message: "Some known languages are invalid" });
-        }
-    
-        // const result= await sendOtp(email);
-        // if (result.error) {
-        //   return res.status(400).json({ error: true, message: result.message });
-        // } else {
-        //   return res.status(200).json({ message: result.message });
+        // if (validLanguages.length !== knownLanguages.length) {
+        //   return res
+        //     .status(400)
+        //     .json({ error: true, message: "Some known languages are invalid" });
         // }
+    
+        const otpResponse= await sendOtp(email);
+        console.log('otpResponse',otpResponse)
+        if (otpResponse.error) {
+          return res.status(400).json({ error: true, message: otpResponse.message });
+        }
+        req.session.tempUser = { email, password };
         
       } catch (error) {
         console.error("Error during signup: ", error);
@@ -96,28 +96,50 @@ const signupUser = async (req, res) => {
       }
 };
 
-const sendOtpEndpoint = async (req, res) => {
-  const { email } = req.body;
+const completeSignup = async (req, res) => {
+  const { preferredLanguage, knownLanguages } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ error: true, message: "Email is required" });
+  if (!preferredLanguage || !Array.isArray(knownLanguages)) {
+      return res.status(400).json({ error: true, message: "Languages are required." });
   }
 
   try {
-    const result = await sendOtp(email);
-    if (result.error) {
-      return res.status(400).json({ error: true, message: result.message });
-    } else {
-      return res.status(200).json({ message: result.message });
-    }
-  } catch (error) {
-    console.error("Error sending OTP: ", error);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Server Error",
+      const tempUser = req.session.tempUser;
+      if (!tempUser || tempUser.email ) {
+          return res.status(400).json({ error: true, message: "User Details are unavailable !!!" });
+      }
+
+      // Create user record
+      let preferredLanguage = await models.Language.findOne({ where: { language_id: preferredLanguage } });
+      if (!preferredLanguage) {
+        return res.status(400).json({ error: true, message: "Preferred language not found." });
+      }
+      
+      const knownLanguages = await models.Language.findAll({ 
+        where: { language_id: knownLanguages },
+        attributes: ["language_id"]
+      });
+      
+      if (knownLanguages.length !== knownLanguages.length) {
+        return res.status(400).json({ error: true, message: "One or more known languages are invalid." });
+      }
+      const hashedPassword = await hashPassword(tempUser.password);
+      await models.User.create({
+        email: tempUser.email,
+        password: hashedPassword,
+        firstName: tempUser.firstName,
+        lastName: tempUser.lastName,
+        preferred_language_id: preferredLanguage,
+        known_language_ids: knownLanguages,
     });
+      req.session.tempUser = null;
+      return res.status(201).json({ error: false, message: "User registered successfully." });
+  } catch (error) {
+      console.error("Error during final registration:", error);
+      return res.status(500).json({ error: true, message: "Internal server error." });
   }
 };
+
 
 const sassyMessages = [
   "Chill out! Your OTP is valid for another ${minutes}m ${seconds}s. It’s not going anywhere—just check your inbox!",
@@ -176,16 +198,24 @@ const resetUser = async (req, res) => {
 
 const otpVerification = async(req,res) => {
   const { email, otp } = req.body;
+  console.log('email',email, 'otp',otp)
   if (!email || !otp) {
     return res.status(400).json({ error: true, message: "Email and OTP are required" });
   }
-
-  const result = await verifyOtp(email, otp);
-  if (result.error) {
-    return res.status(400).json({ error: true, message: result.message });
-  } else {
-    return res.status(200).json({error: false, message: result.message });
+  try {
+    const result = await verifyOtp(email, otp);
+    if (result.error) {
+      return res.status(400).json({ error: true, message: result.message });
+    } else {
+      req.session.tempUser.isVerified = true;
+      console.log('result',result.message)
+      return res.status(200).json({error: false, message: result.message });
+    }
+  } catch (error) {
+    console.error("Error during OTP verification:", error);
+    return res.status(500).json({ error: true, message: "Internal server error." });
   }
+  
 }
 
 // Reset Password Endpoint
@@ -220,22 +250,14 @@ const resetPassword= async (req, res) => {
 };
 
 const verifySignup = async (req, res) => {
-    const {email, otp, firstName, password, preferredLanguage, lastname, knownLanguages} = req.body;
+    const {email, otp} = req.body;
     try {
       const result = await verifyOtp(email, otp);
       if (result.error) {
         return res.status(400).json({ error: true, message: result.message });
-      } 
-      const hashedPassword = await hashPassword(password);
-      const newUser = await User.create({
-        email,
-        password: hashedPassword,
-        firstName,
-        lastname,
-        preferred_language_id: preferredLanguage,
-        known_language_ids: knownLanguages,
-      });
-      return res.status(201).json({ error: false, message: "User created successfully" });
+      }
+      req.session.tempUser.isVerified = true;
+      return res.status(200).json({ error: false, message: "OTP verified successfully." });
     } catch (error) {
       return res.status(400).json({ error: true, message: " Internal server error"})
     }
@@ -442,4 +464,4 @@ const upduser= async (req, res) => {
   }
 };
   
-module.exports = { signupUser, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification, upduser, sendOtpEndpoint };
+module.exports = { signupUserAndSendOtp, verifySignup, loginUser, getUserById, updateUser, resetUser, resetPassword, otpVerification, upduser,completeSignup };
