@@ -86,19 +86,19 @@ const sendOtp = async (email, mobile) => {
           expiry: existingOtp.expiry,
           status: "already-sent" 
         };
-      } else {
-        // Update OTP if the existing one has expired
+      }else {
+        // Existing OTP has expired; generate a new one
         await existingOtp.update({ otp, expiry, isVerified: false });
-        let replacedSentMessage = sentMessage.replace("${email}", email);
-        return { error: false, message: replacedSentMessage };
+        await sendOtpEmail(email, otp);
+        return { error: false, message: sentMessage.replace("${email}", email) };
       }
     } else {
       // Create a new OTP if none exists
       await Otp.create({ email, otp, expiry, isVerified: false });
+      // console.log('entered send otp email')
+      await sendOtpEmail(email, otp);
+      return { error: false, message: sentMessage };
     }
-
-    await sendOtpEmail(email, otp);
-    return { error: false, message: sentMessage };
   } catch (error) {
     console.error("Error sending OTP:", error);
     return { error: true, message: failedSentMessage };
@@ -159,6 +159,7 @@ const verifyOtp = async (email, otp) => {
 };
 
 const sendOtpEmail = async (email, otp) => {
+  console.log('entered send otp email')
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -174,7 +175,14 @@ const sendOtpEmail = async (email, otp) => {
     text: `Your OTP is ${otp}. It is valid for 5 minutes.`,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`OTP email sent successfully to ${email}. Message ID: ${info.messageId}`);
+    return { success: true, messageId: info.messageId }; // Return success and message ID
+  } catch (error) {
+    console.error(`Failed to send OTP email to ${email}:`, error.message);
+    return { success: false, error: error.message }; // Return failure and error message
+  }
 };
 
 module.exports = { sendOtp, verifyOtp, sendOtpEmail };
