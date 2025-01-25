@@ -61,7 +61,7 @@ const sendOtp = async (email, mobile) => {
 
   const randomIndex = Math.floor(Math.random() * otpSentMessages.length);
   const failedIndex = Math.floor(Math.random() * failedOtpMessages.length);
-  const sentMessage = otpSentMessages[randomIndex];
+  let sentMessage = otpSentMessages[randomIndex];
   const failedSentMessage = failedOtpMessages[failedIndex]
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -89,6 +89,8 @@ const sendOtp = async (email, mobile) => {
       } else {
         // Update OTP if the existing one has expired
         await existingOtp.update({ otp, expiry, isVerified: false });
+        let replacedSentMessage = sentMessage.replace("${email}", email);
+        return { error: false, message: replacedSentMessage };
       }
     } else {
       // Create a new OTP if none exists

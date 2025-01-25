@@ -86,7 +86,7 @@ const signupUserAndSendOtp = async (req, res) => {
           return res.status(400).json({ error: true, message: otpResponse.message });
         }
         req.session.tempUser = { email, password };
-        
+        return res.status(200).json({ error: false, message: otpResponse.message });
       } catch (error) {
         console.error("Error during signup: ", error);
         return res.status(500).json({
