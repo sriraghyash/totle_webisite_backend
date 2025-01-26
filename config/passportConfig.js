@@ -29,9 +29,9 @@ passport.use(
             email,
             isVerified: true
           });
-          return done(null, { ...user.toJSON(), isNew: true });
+          return done(null, { ...user, isNew: true });
         }
-        return done(null, { ...user.toJSON(), isNew: false });
+        return done(null, { ...user, isNew: false });
       } catch (error) {
         done(error, null);
       }
