@@ -21,7 +21,7 @@ const googleCallback = (req, res, next) => {
       if (isNew) {
         // console.log("Redirecting to: http://localhost:3000/auth?isNewUser=true?email=" + user.dataValues.email);
         // return res.redirect(`http://localhost:3000/platform`);
-        return res.redirect(`https://www.totle.com/platform`);
+        return res.redirect(`/platform`);
       } else {
         // console.log("Redirecting to: http://localhost:3000/teach");
         // return res.redirect("http://localhost:3000/teach");
