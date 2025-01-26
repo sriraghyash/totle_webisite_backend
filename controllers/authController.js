@@ -18,7 +18,7 @@ const googleCallback = (req, res, next) => {
         return next(loginErr);
       }
       console.log("Login successful. Redirecting to /platform"); // Add this
-      return res.redirect(`/platform`);
+      return res.redirect(`https://www.totle.co/platform`);
     });
   })(req, res, next);
 };
