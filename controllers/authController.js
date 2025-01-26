@@ -5,16 +5,23 @@ const googleAuth = passport.authenticate("google", { scope: ["profile", "email"]
 
 //working source code
 const googleCallback = (req, res, next) => {
-  passport.authenticate("google", (err, user, info) =>{
+  console.log("Inside Google Callback");
+  passport.authenticate("google", (err, user, info) => {
+    console.log("Passport Authenticate Callback Invoked");
     if (err || !user) {
+      console.error("Authentication failed:", err || "No user found");
       return res.redirect("/"); // Redirect to failure page
     }
+
     req.logIn(user, (loginErr) => {
       if (loginErr) {
+        console.error("Login error:", loginErr);
         return next(loginErr);
       }
+
+      console.log("Login successful. Redirecting to /platform");
       return res.redirect(`/platform`);
-    })
+    });
   })(req, res, next);
 };
 
