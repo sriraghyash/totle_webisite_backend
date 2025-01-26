@@ -13,20 +13,7 @@ const googleCallback = (req, res, next) => {
       if (loginErr) {
         return next(loginErr);
       }
-      // console.log('user',user)
-
-      // Conditional redirection based on whether the user is new
-      const { isNew } = user; // Use isNew flag from the strategy
-      // console.log("isNew", isNew);
-      if (isNew) {
-        // console.log("Redirecting to: http://localhost:3000/auth?isNewUser=true?email=" + user.dataValues.email);
-        // return res.redirect(`http://localhost:3000/platform`);
-        return res.redirect(`/platform`);
-      } else {
-        // console.log("Redirecting to: http://localhost:3000/teach");
-        // return res.redirect("http://localhost:3000/teach");
-        return res.redirect("https://www.totle.com/teach");
-      }
+      return res.redirect(`/platform`);
     })
   })(req, res, next);
 };
