@@ -1,6 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const { User } = require("../models/userModels/User");
+const { models } = require("../models");
+const { User } = models;
 
 passport.use(
   new GoogleStrategy(
@@ -8,6 +9,8 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "http://localhost:5000/auth/google/callback",
+      prompt: 'select_account', // Force consent screen
+      prompt: "consent",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -24,10 +27,11 @@ passport.use(
             firstName: givenName,
             lastName: familyName,
             email,
+            isVerified: true
           });
+          return done(null, { ...user, isNew: true });
         }
-
-        done(null, user);
+        return done(null, { ...user, isNew: false });
       } catch (error) {
         done(error, null);
       }
@@ -36,16 +40,32 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  console.log("Serializing user:", user.dataValues.id); // Debugging the user object
+  
+  // Check if user has a `dataValues` property
+  const userId = user.dataValues?.id || user.id;
+
+  if (!userId) {
+    return done(new Error("Cannot serialize user: Missing user ID"), null);
+  }
+
+  done(null, userId); // Serialize only the user ID into the session
 });
+
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findByPk(id);
+    console.log('des id',id)
+    const user = await models.User.findOne({ where: { id } });
+    // console.log(user)
+    if (!user) {
+      return done(new Error("User not found"));
+    }
     done(null, user);
   } catch (error) {
-    done(error, null);
+    done(error);
   }
 });
+
 
 module.exports = passport;

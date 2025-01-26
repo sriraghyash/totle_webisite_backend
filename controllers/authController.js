@@ -1,12 +1,33 @@
 const passport = require("passport");
 require("../config/passportConfig");
 
-const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
+const googleAuth = passport.authenticate("google", { scope: ["profile", "email"], prompt: "consent select_account" });
 
-const googleCallback = passport.authenticate("google", {
-  failureRedirect: "/",
-  successRedirect: "/dashboard",
-});
+//working source code
+const googleCallback = (req, res, next) => {
+  passport.authenticate("google", (err, user, info) =>{
+    if (err || !user) {
+      return res.redirect("/"); // Redirect to failure page
+    }
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        return next(loginErr);
+      }
+      console.log('user',user)
+
+      // Conditional redirection based on whether the user is new
+      const { isNew } = user; // Use isNew flag from the strategy
+      console.log("isNew", isNew);
+      if (isNew) {
+        console.log("Redirecting to: http://localhost:3000/auth?isNewUser=true");
+        return res.redirect(`http://localhost:3000/auth?isNewUser=true?email=${user.email}`);
+      } else {
+        console.log("Redirecting to: http://localhost:3000/teach");
+        return res.redirect("http://localhost:3000/teach");
+      }
+    })
+  })(req, res, next);
+};
 
 const logout = (req, res) => {
   req.logout(() => {
