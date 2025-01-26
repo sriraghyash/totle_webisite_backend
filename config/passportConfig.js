@@ -8,7 +8,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://www.totle.com/auth/google/callback",
+      callbackURL: "https://www.totle.co/auth/google/callback",
       prompt: 'select_account', // Force consent screen
       prompt: "consent",
     },
