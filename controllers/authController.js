@@ -1,7 +1,7 @@
 const passport = require("passport");
 require("../config/passportConfig");
 
-const googleAuth = passport.authenticate("google", { scope: ["profile", "email"], prompt: "consent select_account" });
+const googleAuth = passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account" });
 
 //working source code
 const googleCallback = (req, res, next) => {
