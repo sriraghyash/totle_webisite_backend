@@ -1,7 +1,12 @@
 const passport = require("passport");
 require("../config/passportConfig");
 
-const googleAuth = passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account" });
+// const googleAuth = passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account" });
+const googleAuth = (req, res, next) => {
+  const isNewUser = req.query.isNew === "true"; // Check if it's a new user flow
+  const prompt = isNewUser ? "consent" : "select_account";
+  passport.authenticate("google", { scope: ["profile", "email"], prompt })(req, res, next);
+};
 
 //working source code
 const googleCallback = (req, res, next) => {
