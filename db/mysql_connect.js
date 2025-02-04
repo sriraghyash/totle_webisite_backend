@@ -39,7 +39,7 @@ async function initializeDatabases() {
     // Authenticate and sync the catalog database
     await catalogSequelize.authenticate();
     console.log("Connected to the catalog database successfully.");
-    await catalogSequelize.sync();
+    await catalogSequelize.sync({alter: true});
     console.log("Catalog database models synchronized successfully.");
   } catch (error) {
     console.error("Error during database initialization:", error);
